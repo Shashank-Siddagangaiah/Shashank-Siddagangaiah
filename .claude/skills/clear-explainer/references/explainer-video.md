@@ -2,20 +2,20 @@
 
 Pick the lightest level that does the job. Level 1 is the default inside study pages.
 
-## Level 1: in-page animated walkthrough (no installs, no keys)
+## Level 1: in-page animated walkthrough (default; built and tested)
 
-A scene player built into the HTML page.
+The engine's scene player (`assets/engine.js`) does this. You only write the `scenes` array
+(see `assets/topic.schema.md`). It gives: an SVG stage, a progress bar, Prev/Play/Next, scene dots,
+speed 0.75–1.5×, read-aloud with the browser's voice, a transcript, arrow-key control, autoplay that
+waits for the speech to end, and no motion under `prefers-reduced-motion`.
 
-- **Structure:** an `<svg>` stage, a caption area, and controls: Prev, Play/Pause, Next, scene dots,
-  and a "Read aloud" toggle.
-- **Scenes:** 5–8. One idea per scene. Each scene is a function that draws the stage from the shared
-  toy data, so the numbers match the lab further down the page.
-- **Caption:** one or two ~80% STE sentences per scene. The caption is also the narration text.
-- **Read aloud:** `window.speechSynthesis` with `SpeechSynthesisUtterance`. Wrap it in try/catch and
-  hide the toggle if the API is missing. Start speech only from a click (browsers block autoplay audio).
-- **Autoplay:** when playing, move to the next scene when the speech ends, or after ~7 s without speech.
-- **Motion:** a short fade or slide per scene. Under `prefers-reduced-motion`, switch scenes with no transition.
-- **Keyboard:** left and right arrow keys step through scenes when the player has focus.
+What makes scenes good:
+- **5–8 scenes, one idea each.** The caption is one or two STE sentences. It is also the narration script.
+- **Real numbers.** Each `draw()` reads from the same function as the lab, so the walkthrough and the lab agree.
+- **Change one thing per scene.** Keep the layout fixed and change only what the scene is about,
+  so the eye goes straight to the change (this is most of what makes 3Blue1Brown-style animation readable).
+- **Follow one example all the way.** One token, one query point, one mortgage. Generalize only in the last scene.
+- **Stage size is 720×340.** Keep text 11–14px, labels short. Sentences go in the caption, not on the stage.
 
 ### Scene plan template
 
@@ -28,7 +28,7 @@ A scene player built into the HTML page.
 | 5 | The result | What comes out, with a real number |
 | 6 | The general form | The same thing for all inputs at once (matrix or formula) |
 
-## Level 2: Manim script (true 3Blue1Brown style)
+## Level 2: Manim script (true 3Blue1Brown style; on request, not tested here)
 
 Manim Community Edition is the open-source library used for 3Blue1Brown-style videos.
 
@@ -40,7 +40,7 @@ Manim Community Edition is the open-source library used for 3Blue1Brown-style vi
    - `manim -pqh explainer.py AttentionScene` (`-ql` for a fast low-quality preview)
 4. Manim needs FFmpeg and, for `MathTex`, a LaTeX install. Say so up front.
 
-## Level 3: narrated video (Manim + ElevenLabs)
+## Level 3: narrated video (Manim + ElevenLabs; on request, not tested here)
 
 1. Write the narration script: the scene captions, expanded to about 150 words per minute of video.
 2. Get an ElevenLabs API key through the secure credential request (host `api.elevenlabs.io`,

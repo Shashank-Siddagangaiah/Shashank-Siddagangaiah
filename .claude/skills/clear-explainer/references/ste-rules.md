@@ -49,7 +49,29 @@ schema stuff is sorted, assuming the team has bandwidth."
 2. Migrate the data pipeline. Start only after step 1 is done. Owner: Ravi. Due: 17 March.
    - Caution: Freeze writes to the old pipeline before you start the migration.
 
-## Fast self-check
+## Measure it: `scripts/ste_lint.py`
+
+Run the linter on Markdown, text, or HTML. For engine pages, lint the rendered text that
+`check_page.js --text` writes.
+
+```
+python3 scripts/ste_lint.py response.md
+python3 scripts/ste_lint.py page.txt --glossary glossary.txt
+```
+
+It flags LONG, PASSIVE, WORDY, MULTI (two clauses joined), NOVERB (a numbered step that doesn't start with a verb)
+and SYNONYM (a second name for a term from your glossary). **Pass = at least 80% of sentences are clean.**
+The checks are heuristics: a flagged "the list is sorted" is fine. Fix real problems; don't chase a perfect score.
+
+**Glossary file (rule K5):** one line per term, `preferred=synonym1,synonym2`. Example:
+
+```
+token=word piece,subword
+weight=parameter value
+query=question vector
+```
+
+## Fast self-check (by eye)
 
 Read the draft and flag each sentence with:
 - more than one main verb joined by "and" or "which" → split it (K1)

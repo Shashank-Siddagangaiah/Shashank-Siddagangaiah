@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: quick-question
+expected_outcome: |
+  A short direct chat answer in plain short sentences. No HTML page, no file, no long study guide.

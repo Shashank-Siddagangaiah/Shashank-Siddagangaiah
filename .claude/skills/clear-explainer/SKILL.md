@@ -1,105 +1,83 @@
 ---
 name: clear-explainer
-description: Turns any topic, plan or study list into clear, easy-to-process material using four techniques - writing in ~80% ASD-STE100 Simplified Technical English, diagrams of the real mechanism, interactive HTML pages, and animated or narrated explainer "videos". Use this skill whenever the user asks to explain, teach, summarize or break down a concept; make a study guide, revision notes, cheat sheet, learning roadmap or research list; write a detailed plan, runbook, SOP or step-by-step guide; or says "make it simple", "explain like a manual", "STE", "ASD-STE100", "3Blue1Brown style", "explainer video" or "study page" - even if they don't name the skill. Prefer it over a plain chat answer whenever the material is something the user will study, follow or come back to.
+description: Makes explanations, study material and plans that are easy to read and remember. It writes in ~80% ASD-STE100 Simplified Technical English (short active sentences, one term per meaning), draws diagrams of the real mechanism, and builds interactive study pages with an animated walkthrough, recall prompts, a quiz, flashcards and verified links. Use it whenever the user wants to learn, revise or teach something - a study guide, revision notes, a cheat sheet, a learning roadmap or research list, an explainer, "explain like a manual", "STE", "3Blue1Brown style", "make it simple" - or wants a detailed plan, runbook or SOP to follow, even if they don't name the skill. Also use it to clean up the user's own notes. For a quick one-line factual question, answer directly in plain short sentences instead of building anything.
 ---
 
 # Clear Explainer
 
-Make material that a tired reader understands on the first pass. The skill stacks four
-techniques. Each one removes a different kind of reading effort:
+Make material that a tired reader understands on the first pass and still remembers next week.
+Four techniques, each removing a different kind of effort:
 
-| Technique | Removes | Default for |
+| Technique | Removes | Reference |
 |---|---|---|
-| 1. ~80% STE writing | Parsing effort (long sentences, vague words) | Every output |
-| 2. Diagrams | Assembly effort (building the mechanism in your head) | Any process, flow, structure or comparison |
-| 3. Interactive HTML page | Passive reading (the reader can poke the idea) | Study guides, calculators, anything kept and revisited |
-| 4. Explainer "video" | Attention effort (one idea at a time, in order) | Concepts with a sequence of steps |
+| ~80% STE writing | Parsing effort | `references/ste-rules.md`, `scripts/ste_lint.py` |
+| Mechanism diagrams | Assembly effort (building the picture in your head) | `artifact-diagramming` skill |
+| Interactive study page | Passive reading | `references/study-guide-page.md`, `assets/engine.js` |
+| Animated walkthrough | Attention effort (one idea at a time) | `references/explainer-video.md` |
 
-You don't need all four every time. Pick the smallest set that does the job, using the
-routing table below.
+On top of these, the page adds what reading alone lacks: prediction, free recall, self-testing and spaced review.
 
-## Step 1: Route the request
+## Step 1: Pick the depth tier
 
-| The user wants… | Writing | Diagram | HTML page | Video |
-|---|---|---|---|---|
-| A quick explanation in chat | yes | only if it's a flow (Mermaid or ASCII) | offer in one line | no |
-| A detailed plan, roadmap or runbook | yes, numbered steps | timeline or dependency graph | yes if it will be tracked (use a checklist) | no |
-| A study guide for one topic | yes | 1–3 mechanism diagrams | **yes** | **yes**, an in-page animated walkthrough |
-| A study plan across many topics | yes | roadmap map of how topics feed each other | yes, one hub page with a section per topic | no, one per topic later |
-| A calculator or "show me how X changes" | short | a chart driven by inputs | **yes** | no |
-| "Make a 3Blue1Brown-style video" | narration script | the scenes are the diagrams | yes, as the player | **yes**, see `references/explainer-video.md` |
+Use the **lowest tier that does the job**. A heavy page for a quick question wastes the user's time.
 
-If the request names a topic list (like a research list), build **one** topic first as a sample,
-then offer the rest. Building one first lets the user correct the format before you spend effort on ten.
+| Tier | Output | Use when |
+|---|---|---|
+| **T0** | Chat answer in STE, under ~250 words. No diagram. | A quick question, a definition, a "what's the difference". End with a one-line offer of more. |
+| **T1** | Chat answer in STE + a Mermaid diagram + tables | An explanation the user reads once; a plan; notes cleanup; anything the user says to keep "in chat". |
+| **T2** | One interactive study page (engine) | The user wants to study, revise or come back to one topic ("study guide", "revise from", "before interviews"). |
+| **T3** | A hub page + topic pages on request | A list of topics. Build the hub and **one** sample topic first, then offer the rest. |
+
+Plans and runbooks are T1 by default (`references/plan-and-runbook.md`). Make a tracker page only if the user asks or will follow it day to day.
+When the user says "in chat" or "no page", stay at T0/T1 whatever the topic.
+For anything unusual (non-technical topics, the user's own notes, no web access, other languages), read `references/edge-cases.md`.
 
 ## Step 2: Write in ~80% STE
 
-Read `references/ste-rules.md` for the full rule set and before/after examples. The short version:
+Read `references/ste-rules.md`. The core: one idea per sentence (≤ 20 words for steps, ≤ 25 for descriptions),
+active voice, present tense, one term per meaning, numbered steps that start with a verb, warnings before the step,
+each term defined in plain words the first time. Keep a natural tone: analogies (with where they break) are welcome.
 
-- One idea per sentence. Instructions max ~20 words, descriptions max ~25.
-- Active voice, present tense. "The model computes the score," not "The score is computed."
-- One word for one meaning. If you say "token" once, never switch to "word" or "piece" for the same thing.
-- Simple, common verbs: *use, make, show, give, find, keep, stop*. Avoid *leverage, utilize, facilitate*.
-- Steps are numbered and start with a verb. Warnings come *before* the step they apply to.
-- Define each technical term once, in plain words, the first time it appears.
+Check it: `python3 scripts/ste_lint.py <file>`. Aim for at least 80% clean sentences.
 
-**Why only ~80%:** strict STE bans many words and reads like a maintenance manual. Keep the rules
-that cut effort (short sentences, active voice, fixed terms) and relax the ones that kill tone
-(allowed-word dictionary, banned "-ing" forms). Analogies, a light sense of humor and the occasional
-longer sentence are fine when they carry understanding.
+## Step 3: Get the facts and links right
 
-## Step 3: Draw the mechanism
+Read `references/sources.md` before you add any link or non-obvious fact.
+- Show a verification tier on every link: **official page found**, **confirmed by third party**, or **search link**.
+- Never invent a URL, YouTube ID or timestamp.
+- Run the code you show (or an equivalent check if a library can't be installed), recompute toy numbers, and list any claim you couldn't check.
+- When the user gives notes, keep their content, and flag errors openly at the top ("Correction: …").
 
-Load the **`artifact-diagramming`** skill before you draw anything for a page. Its core rule:
-draw the mechanism, not its name. A box labeled "attention" teaches nothing; the arrows from
-the queries to the keys, the score on each arrow and the masked future tokens teach the idea.
+## Step 4: Draw the mechanism
 
-- Label every arrow with what moves or happens (`q · k`, `writes`, `masks future`).
-- One figure, one claim. Write the claim in the caption.
-- For charts of numbers (loss curves, compounding, benchmarks), load **`dataviz`** instead.
-- In chat or Markdown, use a Mermaid fence. In HTML, hand-written inline SVG themed with `currentColor`.
+Load `artifact-diagramming` before drawing for a page (`dataviz` for charts of numbers).
+Draw what moves and what changes, label every arrow, one claim per figure, caption states the claim.
+In chat, use a Mermaid fence.
 
-## Step 4: Build the interactive page
+## Step 5: Build the page (T2 / T3)
 
-For any study guide, calculator or plan the user will keep, make an HTML artifact:
+Use the engine. Don't hand-write the player, quiz and storage code again.
 
-1. Call the Artifact tool with `action: "quickstart"` and `intent: "other"` (this loads the
-   `artifact-design` guidance). For a deck use `intent: "slides"`. For an editable shared doc use the docs skill.
-2. If the page must remember progress across devices or viewers, load **`artifact-capabilities`**.
-   For per-viewer progress (quiz answers, "done" checkboxes), `localStorage` inside try/catch is enough.
-3. Follow the page blueprint in `references/study-guide-page.md`. It lists the sections, in order,
-   that make a page that teaches rather than just displays.
-4. `assets/example-self-attention.html` is a complete worked example (self-attention, LLM
-   fundamentals list). Read it for the structure and level of finish. Don't copy its content.
+1. Call Artifact `quickstart` with `intent: "other"` once per new page (it loads the design contract).
+2. Copy `assets/example-topic.js`. Fill it using `assets/topic.schema.md` and the section list in `references/study-guide-page.md`.
+3. Build: `python3 scripts/build_page.py --artifact --out <scratchpad>/<id>.html <topic>.js` (add `--catalog` for a hub).
+4. Check: `node scripts/check_page.js <file> --text <file>.txt`, then `python3 scripts/ste_lint.py <file>.txt`.
+   Fix every FAIL before you publish.
+5. Publish the built file with the Artifact tool. Keep the topic `.js` as the source for later edits.
 
-Artifact constraints to remember: no iframes (so no embedded YouTube; use link cards instead),
-scripts only from the allowed CDNs, both light and dark themes, works at phone width.
+If the session has no Artifact tool, build without `--artifact` and give the user the `.html` file.
 
-## Step 5: Add the explainer "video" (when it helps)
+## Step 6: Hand off to other skills when they fit
 
-Read `references/explainer-video.md`. There are three levels. Pick the lightest one that fits:
+Read `references/skill-connections.md`: docs for an editable summary, Slides for a teaching deck, Sheets for a tracker,
+deep-research when a topic needs multi-source research first, pdf for the user's papers, artifact-capabilities for synced progress.
 
-1. **In-page animated walkthrough (default):** a scene player inside the HTML page with
-   Prev / Play / Next, one caption per scene and optional read-aloud by the browser's voice.
-   It needs no keys or installs, and it lives next to the material.
-2. **Manim script:** real 3Blue1Brown-style rendered video. Write the Python scene file and
-   the render command. The user runs it locally (`manim -pqh file.py Scene`).
-3. **Narrated video:** level 2 plus voice-over audio from an ElevenLabs API key. Ask for the key
-   through the secure credential flow, never in chat.
+## Before you reply
 
-## Step 6: Check the resources
-
-When the user's material lists videos, papers or repos, check them. Use web search to confirm that
-each one exists and what it covers, then show the result as **verified / unverified / wrong**. Never
-invent a timestamp, URL or video title. If you can't confirm one, say so and link the channel or a search instead.
-
-## Output checklist
-
-Before you hand over the result, confirm:
-
-- [ ] Every sentence passes the ~80% STE rules (spot-check the five longest).
-- [ ] Each term keeps one name from start to end.
-- [ ] Each diagram shows a mechanism and has a caption that states its claim.
-- [ ] The page has a self-check (quiz or recall prompts). Reading without retrieval doesn't stick.
-- [ ] Every resource link is verified or marked unverified.
-- [ ] The reply offers the next step: the next topic, the Manim version, or a printable summary.
+- [ ] The tier fits the request (no page for a quick question; no page when the user said "in chat").
+- [ ] `ste_lint.py` passes, and each term keeps one name.
+- [ ] Every diagram shows a mechanism, with a caption that states its claim.
+- [ ] Every link has a tier. No link or fact is called checked unless you checked it.
+- [ ] Code ran (or the page says it didn't), and the numbers match.
+- [ ] Pages: `check_page.js` passes; the page has predict, recall, quiz and flashcards.
+- [ ] The reply is short. It gives the link or answer, what was checked, what wasn't, and one next step.

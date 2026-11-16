@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: user-notes-input
+expected_outcome: |
+  Clean revision notes in chat that keep the user's content and structure, written in short plain sentences, and that flag the factual error: speculative decoding preserves the target model's output distribution, so quality is not worse.

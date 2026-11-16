@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: detailed-plan
+expected_outcome: |
+  A detailed week-by-week plan with numbered command-form steps, hours per week that fit the 5 h budget, a dependency or timeline diagram, and a checkable deliverable per week.

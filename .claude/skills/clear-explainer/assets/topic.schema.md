@@ -17,7 +17,7 @@ complete, working example. Copy it and replace each field.
 | `scenes` | recommended | `[{ title: "1 · Name", text, draw() }]`. `draw()` returns SVG markup for a 720×340 stage. `text` is the caption and the read-aloud script. |
 | `html` | yes | The topic's own sections: steps, diagrams, lab, hand exercise, code, facts. Plain HTML string. |
 | `recall` | yes | 1–3 free-recall prompts: `[{ q, model }]`. `model` is the model answer (HTML allowed). |
-| `quiz` | yes | 4–6 questions: `[{ q, o, a, why }]`. Keep option lengths similar so the longest isn't always right. |
+| `quiz` | yes | 4–6 questions: `[{ q, o, a, why }]`. The engine shuffles the options (a stable order per question), so you may list the right answer first. Keep option lengths similar so the longest isn't always right. |
 | `cards` | yes | 6–10 flashcards: `[{ f, b }]` (front, back) |
 | `resources` | yes | `[{ kind, title, url, tier, note }]`. `tier` is `source`, `third` or `search` (see `references/sources.md`). |
 | `next` | no | `{ title, text, id? }`. With `id`, the engine links to that topic. |

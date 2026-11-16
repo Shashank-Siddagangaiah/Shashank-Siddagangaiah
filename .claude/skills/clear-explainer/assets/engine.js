@@ -86,7 +86,14 @@
     const wrap = el("div", "card");
     wrap.appendChild(el("div", "qn", esc(item.q)));
     const opts = el("div", "opts");
-    item.o.forEach((o, oi) => {
+    // Show options in a stable shuffled order (seeded by the question text), so the right answer
+    // isn't always in the same slot. Stored answers keep the original index, so saved progress stays valid.
+    let seed = 0;
+    for (const ch of String(item.q)) seed = (seed * 31 + ch.charCodeAt(0)) >>> 0;
+    const order = item.o.map((_, i) => i);
+    for (let i = order.length - 1; i > 0; i--) { seed = (seed * 1103515245 + 12345) >>> 0; const j = seed % (i + 1); [order[i], order[j]] = [order[j], order[i]]; }
+    order.forEach((oi) => {
+      const o = item.o[oi];
       const b = el("button", "opt");
       b.type = "button";
       b.innerHTML = o;

@@ -36,3 +36,9 @@ Schematic SVG maps drawn from approximate lat/lon are fine (label them "approxim
 - Mobile first: no horizontal scroll at 390 px; long chips must wrap.
 - Use tables for comparisons; keep paragraphs short.
 - No personal data on the page.
+
+## Extra sections that add real value
+- **Before you go** — a dated timeline (e.g. 3 days before: confirm bookings; 24 h before: mobile check-in; night before: pack and charge).
+- **Morning-of checklists** per day (tickets, cash, chargers, swimsuits).
+- **Apps to install**, **what to wear** (dress codes), **money** (which card to use where, cash spots), **emergency info**.
+- **Plain-text version** in a copyable block with a Copy button, for pasting into another assistant, a calendar or notes.

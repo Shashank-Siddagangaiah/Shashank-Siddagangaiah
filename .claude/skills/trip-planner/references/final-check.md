@@ -35,3 +35,14 @@ Each item below is a mistake that has really happened in a planning session. Go 
 - [ ] Bookings tracker, to-do checklist and budget agree with each other.
 - [ ] No personal data on the page (names, confirmation/ticket/policy numbers, addresses, phone, email).
 - [ ] Sources listed with the date checked.
+
+## Proactive coverage (from the gap radar)
+- [ ] Airport choice compared by total cost (fare + bags + ground transport).
+- [ ] Bag allowance per person per flight noted, including spare space for shopping.
+- [ ] Rental car: branch, one-way fee, drop-off vs flight, protection (card/personal/LIS), toll plan, roadside.
+- [ ] Credit-card perks used (coverage, status, dining multipliers) and the "pay with that card" rule stated.
+- [ ] Travel insurance evaluated against existing coverage, with the refund deadline.
+- [ ] Hotel fees, deposits, refund deadlines and parking captured.
+- [ ] Reservations: release windows, seating type, cancellation fees.
+- [ ] "Before you go" timeline, apps to install, what to wear, cash needs, emergency info.
+- [ ] Plain-text version of the plan offered for pasting into other tools.

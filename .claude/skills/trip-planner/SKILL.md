@@ -1,78 +1,110 @@
 ---
 name: trip-planner
-description: Plan complete, end-to-end trips and itineraries — interview the traveler, research and verify places, build a day-by-day plan clustered by area with meal and bar options, bookings tracker, budget, and a shareable itinerary page with maps and Google Maps links. Use this skill whenever someone wants to plan a trip, vacation, holiday, honeymoon, weekend getaway, road trip, or "X days in some city", asks for an itinerary or travel plan, compares hotels/flights/rental cars for a trip, wants restaurant, food or bar suggestions for a destination they're visiting, or sends booking confirmations and asks to update their plan — even if they never say the word "itinerary".
+description: Plan complete, end-to-end trips and itineraries — interview the traveler, research and verify places, build a day-by-day plan clustered by area with meal, bar and activity options, handle flights, hotels, rental cars, insurance and credit-card perks, track bookings and budget, and publish a shareable itinerary page with maps and Google Maps links. Use this skill whenever someone wants to plan a trip, vacation, holiday, honeymoon, weekend getaway, road trip or "X days in some city", asks for an itinerary or travel plan, compares hotels, flights or rental cars for a trip, asks what to eat or drink at a destination, asks whether an attraction, add-on or insurance is worth it, or pastes booking confirmations and wants the plan updated — even if they never say "itinerary".
 ---
 
 # Trip Planner
 
-Turn a rough travel idea into a verified, bookable, end-to-end itinerary the traveler can follow on their phone — and keep it current as they book things.
+Turn a rough travel idea into a verified, bookable, end-to-end plan the traveler can follow on their phone, and keep it current as they book.
 
-The value of this skill is not listing famous places (anyone can do that). It is: asking the right questions up front, **verifying** what's actually open and feasible on the exact dates, sequencing days so nothing backtracks or collides, and turning the plan into a living document the traveler updates as they book.
+This skill is written to work with any capable model or agent framework. Where it says "ask", use whatever question mechanism you have (a multiple-choice tool if available, otherwise a short numbered list in chat). Where it says "search", use web search; if you have none, say which facts are unverified.
 
-## Workflow at a glance
+## Why this skill exists
 
-1. **Interview** — gather preferences in short rounds (see "Intake").
-2. **Research & verify** — weather, events, opening days, closures, prices, travel times.
-3. **Draft the plan** — cluster by area, best-first, rest built in, 2–3 options per meal.
-4. **Publish the itinerary page** — see `references/page-structure.md`.
-5. **Iterate with bookings** — as the traveler books flights, hotels, cars, tables, update status, times and budget, then re-verify.
-6. **Final check loop** — run `references/final-check.md` before calling it done.
+Listing famous places is easy. What travelers actually need — and what planners usually miss until the traveler points it out — is:
 
-## 1. Intake (ask in rounds, not all at once)
+1. **Asking about everything that affects the plan before drafting**, not one topic at a time after the fact.
+2. **Verifying** the plan against reality: closed days, closed restaurants, ticket rules, travel times, fees.
+3. **Sequencing** days so nothing backtracks, collides or ignores how the traveler likes to travel (late mornings, rest breaks).
+4. **Owning the logistics layer**: flights vs ground cost, rental car rules, insurance, card perks, luggage, parking, reservations.
+5. **Keeping a living document** that updates as bookings come in.
 
-Use a multiple-choice question tool if available; 3–4 questions per round, with a recommended option first. Don't re-ask what the user already said. Typical rounds:
+`references/gap-radar.md` lists the topics planners most often forget. Read it before the first draft and again before the final check.
 
-- **Round 1 — shape:** dates and flexibility (which days are free?), who's traveling, origin city and nearest airports, total budget (and whether flights are included).
-- **Round 2 — style:** pace (packed / balanced / relaxed), what time they like to start the day, interests (culture, beaches, nature, nightlife, shopping, food), must-dos and must-avoids, any videos/articles/notes they've collected (ask them to paste or upload; links to video sites may be unreachable).
-- **Round 3 — logistics:** lodging style (one base vs split stays; splurge where they rest, save where they only sleep), getting around (rideshare vs rental car vs tours — consider parking cost/hassle), day trips worth a full day vs not.
-- **Round 4 — food & drink:** every diet restriction per traveler (e.g. "no beef", "vegetarian but eats eggs and seafood"), spice tolerance, cuisines they love, breakfast style, whether they drink (and want mocktails).
+## Workflow
 
-**Read answers literally and confirm when ambiguous.** A misread preference (e.g. treating "I like crab" as "no crab") damages trust; when unsure, ask in one line.
+| Phase | What you do | Output |
+|---|---|---|
+| 1. Intake | Ask the question bank in rounds (`references/intake-questions.md`) | A **trip brief** (`references/trip-brief-template.md`) |
+| 2. Research | Verify weather, events, opening days, closures, prices, times | Notes with sources and "checked on" dates |
+| 3. Draft | Build days using the planning rules below | Day-by-day plan + logistics + budget |
+| 4. Publish | Build the itinerary page (`references/page-structure.md`); also offer a plain-text version for pasting into other tools/AIs | Shareable page |
+| 5. Iterate | Process bookings and questions; re-verify after each change | Updated page + changelog |
+| 6. Final check | Run `references/final-check.md`; score with `references/quality-rubric.md` | Clean plan + list of open items |
 
-## 2. Research & verify (this is where plans usually fail)
+Keep the trip brief up to date throughout. It is the hand-off document: any other agent or model should be able to continue the work from the brief plus the current page.
 
-Search the web for each of these and cite sources at the end:
+## Phase 1 — Intake
 
-- **Weather & conditions for the exact dates** — rain chance, wind; marine forecasts if boats/snorkeling are involved. Put weather-sensitive activities on the best day and give every day a backup.
-- **Events & holidays** — big events (traffic near arenas/convention centers), holiday travel surges (airport buffers of 2–2.5 h).
-- **Opening days and hours** — museums and attractions often close 1–2 weekdays. Schedule around closed days instead of discovering them on site.
-- **"Permanently closed" check** — restaurants close often; aggregator lists are stale. Tell the user to confirm on Google Maps before going, and swap immediately when they report a closure.
-- **Ticket types** — e.g. which pass includes a cruise; whether a voucher must be exchanged and how early; afternoon vs morning tour departures.
-- **Travel times** — realistic drive/transit times, and whether stops are on the way or require backtracking.
-- **Prices & hidden fees** — resort/destination fees, parking, auto-gratuity on bills, card surcharges, one-way rental fees, toll plans, bag fees on budget airlines. Always label prices as estimates unless they come from the user's own checkout screen.
+Ask in short rounds (3–4 questions each), recommended option first, and never re-ask what the traveler already told you. Cover every section of `references/intake-questions.md` before drafting — especially the logistics sections (flights, car, cards, insurance, luggage), which travelers rarely volunteer and which drive the most corrections later.
 
-When a source can't confirm something (hours for 2026, cover charges), say so plainly rather than guessing.
+Read answers literally. If a preference is ambiguous ("crab" — likes it or avoids it?), confirm in one line. Misreading a preference costs more trust than asking.
 
-## 3. Planning principles
+If the traveler shares material (videos, notes, other planners' drafts), ask for it as text or an upload; video links are often unreachable. Extract every place and tip, tag what you use as "from your sources", and say what you dropped and why.
 
-- **One area per block, in walking order.** Each day moves through neighborhoods in a line; no zig-zag. Use zoomed walking maps (A → B → C) for dense clusters.
-- **Best first.** Tag each stop **Top pick** or **If time** so the traveler knows what to drop when tired.
-- **Rest built in.** At least one slow block per day; respect their preferred wake-up time.
-- **Feasibility checks on every timeline:** no lunch at 10 am because an early car pickup shifted the day; no sunset activity at the same time a tour returns; rental drop-off well before the flight (not after it); check-in/check-out times vs. arrival/departure.
-- **Transport:** rideshare for dense city days; rent a car only for the days that need it; compare a full-trip car (rental + nightly parking) vs partial rental + rideshare with a short cost table. Note insurance options (own policy, credit-card coverage — primary vs secondary — and that liability is separate).
-- **Meals:** for every meal give **2–3 nearby options**, each with its signature dishes, a rough rating if found, and diet tags for each traveler. Vary breakfasts beyond sandwiches (shakshuka, local specialties, smoothie bowls, diner classics). Highlight the destination's must-try dishes (and seasonal ones).
-- **Bars/nightlife:** for each bar give the **famous drink to order**, why go, cover-charge status, and mocktail availability. Warn about tourist-trap pricing.
-- **Options, not overload:** when the user asks "is X worth it?", give an honest verdict with the trade-off (time, cost, fit with their preferences), then a recommendation.
+## Phase 2 — Research and verify
 
-## 4. The itinerary page
+For each item, search, then record the fact, the source and the date checked:
 
-Publish a single shareable page (an Artifact if available, otherwise an HTML file). Follow `references/page-structure.md` for sections, map conventions, link formats and visual rules. Key rules:
+- **Weather for the exact dates** (rain chance, wind; marine forecast if boats or snorkeling). Put weather-sensitive activities on the best day; give every day a backup.
+- **Events and holidays** that cause traffic, crowds or price spikes; airport buffers for holiday weeks.
+- **Opening days and hours** of every attraction (many close one or two weekdays) — schedule around them.
+- **Restaurant status** — search for "permanently closed"; tell the traveler to confirm on a live map app the day before.
+- **Ticket mechanics** — what a pass includes, vouchers to exchange and how early, morning vs afternoon departures, reservation release windows (some restaurants release tables weeks ahead at a fixed time).
+- **Travel times and order** — are stops on the way or a detour?
+- **Prices and hidden fees** — see the money section of the gap radar. Label prices as estimates unless they come from the traveler's own checkout.
 
-- Every place gets a 📍 Google Maps link; every day gets a route button whose stop order matches the numbered pins.
-- Keep personal data off the page (names, confirmation/ticket/policy numbers, home address, phone, email) — the page may be shared.
-- Mobile-first: verify no horizontal scrolling at ~390 px; use the theme the user asks for (e.g. white background only).
+When a source can't confirm something, say so instead of guessing. Prefer official sites; treat aggregator snapshots as rough.
 
-## 5. Iterating with bookings
+## Phase 3 — Draft: planning rules
 
-When the user pastes a confirmation or checkout screen:
-- Read the **actual** times, fees and inclusions; flag mismatches immediately (e.g. a drop-off time after the flight, a room type they didn't intend, a non-refundable rate in a stormy week).
-- Update the bookings tracker, the affected day, the map, the to-do list and the budget together, then re-run the relevant final checks.
-- If they ask whether an add-on is needed (travel insurance, rental protection, stay protection), compare it against what they already have (credit card benefits, personal auto policy) and give a clear keep/skip.
+**Shape of each day**
+- One area per block, in a line, no backtracking. Dense clusters get a walking order (A → B → C).
+- Start at the traveler's preferred wake-up time; at least one rest block per day; note the one or two days that must start early and why.
+- Best first: tag stops **Top pick** or **If time**.
+- Feasibility: meals at sensible times after any schedule shift; no activity overlapping a tour's return; check-in/check-out vs arrival/departure; rental drop-off well before the flight; voucher exchanges and reservation times with buffers; sunset times for sunset activities.
+- Backups: a rain or cancellation option for every day, and confirm the backup is open that day.
 
-## 6. Final check
+**Food and drink**
+- Every meal: 2–3 nearby options, ⭐ one, each with signature dishes, an approximate rating if found, and diet tags per traveler. Vary breakfasts (local specialties, egg dishes, bowls, diner classics), not just sandwiches.
+- A must-try list for the destination, including seasonal specialties, mapped to where they are on the route.
+- Bars: for each, the famous drink to order, why go, cover-charge status and mocktail options; warn about tourist-trap pricing.
+- When the traveler names a famous/celebrity restaurant, give an honest fit check against their diet and taste, not just its reputation.
 
-Before declaring the plan done (and after major edits), go through `references/final-check.md`. It is the list of mistakes that actually happened in real planning sessions.
+**Getting around**
+- Compare options with a small cost-and-hassle table: rideshare, transit, tour transport, partial car rental, full-trip rental (include nightly parking, tolls, one-way fees, airport fees).
+- Rent cars only for the days that need them unless the numbers say otherwise.
+
+**"Is it worth it?" questions**
+- Give a verdict, the trade-off (time, cost, fit), and an alternative. Don't hedge everything.
+
+## Phase 4 — Publish
+
+Build one shareable page following `references/page-structure.md`: every place has a map-app link, every day has a route whose stop order matches its numbered pins, and there's a bookings tracker, a to-do checklist, a budget and sources. Keep personal data off the page (names, confirmation/ticket/policy numbers, addresses, phone, email). Respect the visual theme the traveler asks for, and check the page at phone width.
+
+Also offer a **plain-text version** of the itinerary (day, time, place, notes, bookings) that the traveler can paste into another assistant, a calendar or a note app.
+
+## Phase 5 — Iterate with bookings
+
+When the traveler pastes a confirmation, checkout screen or policy:
+- Extract actual times, fees, inclusions and deadlines. Flag mismatches at once (e.g. a car drop-off after the flight, a non-refundable rate, a room type they didn't intend, an expired insurance card).
+- Update together: bookings tracker, affected days, maps and routes, to-do list, budget. Then re-run the relevant final checks.
+- For add-ons (travel insurance, rental protection, stay protection, roadside assistance), compare against what they already have — credit-card benefits (primary vs secondary coverage), personal auto policy (collision, comprehensive, liability limits, deductible) — and give a keep/skip.
+- Never copy confirmation numbers or personal details into the shareable page.
+
+## Phase 6 — Final check and score
+
+Run `references/final-check.md` end to end, fix what fails, then score the plan with `references/quality-rubric.md`. Report the score, what's still open, and the next three things the traveler should book or confirm.
 
 ## Tone
 
-Plain, friendly, decisive. Lead with the recommendation, then the short why. Use small tables for comparisons. Don't pad; the traveler is often reading on a phone.
+Plain, friendly, decisive. Lead with the recommendation, then the short why. Use small tables for comparisons. The traveler is often reading on a phone, so keep paragraphs short and avoid jargon.
+
+## Reference files
+
+- `references/intake-questions.md` — the full question bank, by round.
+- `references/gap-radar.md` — topics planners forget; read before drafting and before the final check.
+- `references/trip-brief-template.md` — the hand-off document for other agents and models.
+- `references/page-structure.md` — sections, links, maps and visual rules for the itinerary page.
+- `references/final-check.md` — the pre-delivery checklist.
+- `references/quality-rubric.md` — how to score a plan (and this skill) out of 10.
